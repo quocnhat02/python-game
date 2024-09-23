@@ -20,6 +20,11 @@ player_x = 375  # Vị trí giữa màn hình (800/2 - 50/2)
 player_y = 525  # Vị trí gần đáy màn hình
 player_speed = 5  # Tốc độ di chuyển của nhân vật
 
+# Nhảy
+is_jumping = False
+jump_velocity = 10  # Tốc độ nhảy ban đầu
+gravity = 0.5       # Trọng lực để kéo nhân vật xuống sau khi nhảy
+
 # Cờ để kiểm tra vòng lặp chạy
 running = True
 
@@ -39,6 +44,22 @@ while running:
     # 800 (chiều rộng màn hình) - 50 (kích thước hình ảnh)
     if keys[pygame.K_RIGHT] and player_x < 750:
         player_x += player_speed
+
+    # Logic nhảy khi nhấn Space
+    if not is_jumping:
+        if keys[pygame.K_SPACE]:  # Nếu nhấn phím Space và không nhảy
+            is_jumping = True  # Bắt đầu nhảy
+            jump_velocity = 10  # Khởi tạo tốc độ nhảy
+
+    if is_jumping:
+        # Nhân vật di chuyển lên trên
+        player_y -= jump_velocity
+        jump_velocity -= gravity  # Giảm tốc độ nhảy (do trọng lực)
+
+        # Khi tốc độ nhảy âm và chạm đất, kết thúc nhảy
+        if player_y >= 525:  # Vị trí đáy màn hình
+            player_y = 525  # Đảm bảo nhân vật không rơi qua đáy
+            is_jumping = False  # Kết thúc nhảy
 
     # Xóa màn hình trước khi vẽ lại
     screen.fill((255, 255, 255))  # Màu nền trắng (R,G,B)
