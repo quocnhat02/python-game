@@ -29,7 +29,7 @@ class Player:
         self.shoot_images = [pygame.transform.scale(
             pygame.image.load(f'Shoot-{i}.png'), (50, 50)) for i in range(1, 4)]
         self.idle_image = pygame.transform.scale(
-            pygame.image.load('robot-1.png'), (50, 50))
+            pygame.image.load('idle-1.png'), (50, 50))
         self.bullet_image = pygame.transform.scale(
             pygame.image.load('Bullet.png'), (20, 10))
 
