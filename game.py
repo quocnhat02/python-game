@@ -13,9 +13,13 @@ class Player:
         self.is_facing_right = True
         self.bullets = []
         self.can_shoot = True
+        self.is_shooting = False
         self.current_image = 0
         self.frame_count = 0
         self.animation_speed = 0.2
+
+        # Tầm bắn (khoảng cách tối đa mà viên đạn có thể bay)
+        self.bullet_range = 400
 
         # Tải hình ảnh
         self.run_images = [pygame.transform.scale(
@@ -31,11 +35,10 @@ class Player:
 
     def jump(self):
         if not self.is_jumping:
-            if pygame.key.get_pressed()[pygame.K_UP]:  # Kiểm tra phím UP
+            if pygame.key.get_pressed()[pygame.K_UP]:
                 self.is_jumping = True
         else:
             if self.jump_velocity >= -10:
-                neg = 1 if self.jump_velocity < 0 else -1
                 self.y -= self.jump_velocity
                 self.jump_velocity -= self.gravity
             else:
@@ -58,32 +61,43 @@ class Player:
 
     def shoot(self):
         if self.can_shoot:
+            self.is_shooting = True
             self.can_shoot = False
             bullet_x = self.x + (50 if self.is_facing_right else 0)
             bullet_y = self.y + 25
             bullet_dir = 1 if self.is_facing_right else -1
-            self.bullets.append([bullet_x, bullet_y, bullet_dir])
+            # Thêm start_x để theo dõi vị trí ban đầu của viên đạn
+            self.bullets.append([bullet_x, bullet_y, bullet_dir, bullet_x])
 
     def update_bullets(self):
         for bullet in self.bullets:
-            bullet[0] += 10 * bullet[2]
-        self.bullets = [
-            bullet for bullet in self.bullets if 0 < bullet[0] < 800]
+            bullet[0] += 10 * bullet[2]  # Di chuyển đạn
+            # Xóa viên đạn nếu nó đã vượt quá tầm bắn
+            if abs(bullet[0] - bullet[3]) > self.bullet_range:
+                self.bullets.remove(bullet)
 
     def draw(self, screen):
-        if self.is_moving:
+        if self.is_shooting:
+            self.frame_count += self.animation_speed
+            current_image = int(self.frame_count) % len(self.shoot_images)
+            img = self.shoot_images[current_image]
+        elif self.is_moving:
             current_image = int(self.frame_count) % len(self.run_images)
-            img = self.run_shoot_images[current_image] if self.is_jumping else self.run_images[current_image]
+            img = self.run_images[current_image]
         else:
-            img = self.shoot_images[self.current_image] if self.is_jumping else self.idle_image
+            img = self.idle_image
 
         if not self.is_facing_right:
             img = pygame.transform.flip(img, True, False)
 
         screen.blit(img, (self.x, self.y))
 
+        # Vẽ các viên đạn
         for bullet in self.bullets:
             screen.blit(self.bullet_image, (bullet[0], bullet[1]))
+
+        if not pygame.key.get_pressed()[pygame.K_SPACE]:
+            self.is_shooting = False
 
 
 # Khởi tạo Pygame
