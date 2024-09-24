@@ -19,19 +19,11 @@ class Game:
         # Tạo điểm số
         self.score = Score()
 
-        # Tạo bề mặt cache
-        self.cache_surface = pygame.Surface(screen.get_size())
-        self.cache_surface.fill((0, 0, 0))  # Màu nền đen
+        # Xác định số điểm để chiến thắng
+        self.win_score = 2
 
-        # Vẽ các đối tượng lên bề mặt cache
-        self.update_cache()
-
-    def update_cache(self):
-        self.cache_surface.fill((0, 0, 0))  # Màu nền đen
-        self.left_paddle.render(self.cache_surface)
-        self.right_paddle.render(self.cache_surface)
-        self.ball.render(self.cache_surface)
-        self.score.render(self.cache_surface)
+        # Biến để kiểm soát trạng thái trò chơi
+        self.running = True
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
@@ -41,6 +33,14 @@ class Game:
     def update(self):
         paddles = [self.left_paddle, self.right_paddle]
         self.ball.update(paddles, self.score)
+
+        # Kiểm tra điều kiện chiến thắng
+        if self.score.left_score >= self.win_score:
+            print("Người chơi bên trái chiến thắng!")
+            self.running = False  # Đặt biến dừng
+        elif self.score.right_score >= self.win_score:
+            print("Người chơi bên phải chiến thắng!")
+            self.running = False  # Đặt biến dừng
 
     def render(self):
         self.screen.fill((0, 0, 0))  # Màu nền đen
@@ -53,11 +53,10 @@ class Game:
         pygame.display.flip()
 
     def run(self):
-        running = True
-        while running:
+        while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.running = False
 
             self.handle_input()
             self.update()
