@@ -25,7 +25,8 @@ class Game:
         self.right_paddle.move(keys, pygame.K_UP, pygame.K_DOWN)
 
     def update(self):
-        self.ball.update(self.left_paddle, self.right_paddle, self.score)
+        paddles = [self.left_paddle, self.right_paddle]
+        self.ball.update(paddles, self.score)
 
     def render(self):
         self.screen.fill((0, 0, 0))  # Màu nền đen
