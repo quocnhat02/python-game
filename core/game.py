@@ -19,6 +19,20 @@ class Game:
         # Tạo điểm số
         self.score = Score()
 
+        # Tạo bề mặt cache
+        self.cache_surface = pygame.Surface(screen.get_size())
+        self.cache_surface.fill((0, 0, 0))  # Màu nền đen
+
+        # Vẽ các đối tượng lên bề mặt cache
+        self.update_cache()
+
+    def update_cache(self):
+        self.cache_surface.fill((0, 0, 0))  # Màu nền đen
+        self.left_paddle.render(self.cache_surface)
+        self.right_paddle.render(self.cache_surface)
+        self.ball.render(self.cache_surface)
+        self.score.render(self.cache_surface)
+
     def handle_input(self):
         keys = pygame.key.get_pressed()
         self.left_paddle.move(keys, pygame.K_w, pygame.K_s)
